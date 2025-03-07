@@ -14,7 +14,7 @@ class MLP:
         
         # Couche d'entrée  à première couche cachée
         self.poids.append(np.random.randn(couche_cachés[0], n_entrées))
-        self.b.append(np.random.randn(couche_cachés[0], 1))
+        self.biais.append(np.random.randn(couche_cachés[0], 1))
         
         # (nombre de neurones dans la couche suivante) x (nombre de neurones dans la couche actuelle + 1) (le +1 est pour le biais).
         for i in range (1, len(couche_cachés)):
@@ -32,10 +32,11 @@ class MLP:
     
     # Dérivée de la sigmoid 
     def derivé_sigmoid(self, x):
-        return x * (1 - x)
+        sig = self.sigmoid(x)
+        return sig * (1 - sig)
     
     # Fonction de propagation vers l'avant
-    def forpoidsard(self, X):
+    def forward(self, X):
         """
         Propagation vers l'avant à travers le réseau.
         :X -- Données d'entrée (n_entrées, n_exemples)
@@ -43,4 +44,14 @@ class MLP:
         """
         A = X  # Initialisation de la sortie de la couche d'entrée
         for poids, biais in zip(self.poids, self.biais):
-            
+            Z = np.dot(poids, A) + biais    # Calcul linéaire  Z = WX + b
+            A = self.sigmoid(Z)   # Applique la fonction d'activation sigmoid
+        return A    # Sortie finale du réseau
+
+
+# Example d'utilisation
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)
+x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
+output = mlp1.forward(x_iputs)
+    
+print("Sortie du MLP est :",output)
