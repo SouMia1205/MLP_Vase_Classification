@@ -9,21 +9,21 @@ class MLP:
         self.n_sorties = n_sorties  # nombre de neurones de sortie.
         
         # Initialisation des poids et biais
-        self.W = []  # Liste des matrices de poids
-        self.b = []  # Liste des biais
+        self.poids = []  # Liste des matrices de poids
+        self.biais = []  # Liste des biais
         
         # Couche d'entrée  à première couche cachée
-        self.W.append(np.random.randn(couche_cachés[0], n_entrées))
-        self.b.append(np.random.randn(couche_cachés[0], 1))
+        self.poids.append(np.random.randn(couche_cachés[0], n_entrées))
+        self.biais.append(np.random.randn(couche_cachés[0], 1))
         
         # (nombre de neurones dans la couche suivante) x (nombre de neurones dans la couche actuelle + 1) (le +1 est pour le biais).
         for i in range (1, len(couche_cachés)):
-            self.W.append(np.random.randn(couche_cachés[i], couche_cachés[i-1]))
-            self.b.append(np.random.randn(couche_cachés[i], 1))
+            self.poids.append(np.random.randn(couche_cachés[i], couche_cachés[i-1]))
+            self.biais.append(np.random.randn(couche_cachés[i], 1))
         
         # Dernière couche cachée à la couche de sortie
-        self.W.append(np.random.randn(1, couche_cachés[-1]))
-        self.b.append(np.random.randn(n_sorties, 1))
+        self.poids.append(np.random.randn(1, couche_cachés[-1]))
+        self.biais.append(np.random.randn(n_sorties, 1))
     
     
     # Fonction d'activation sigmoid
@@ -32,7 +32,8 @@ class MLP:
     
     # Dérivée de la sigmoid 
     def derivé_sigmoid(self, x):
-        return x * (1 - x)
+        sig = self.sigmoid(x)
+        return sig * (1 - sig)
     
     # Fonction de propagation vers l'avant
     def forward(self, X):
@@ -42,5 +43,15 @@ class MLP:
         :return -- Sortie du réseau aprés activation.
         """
         A = X  # Initialisation de la sortie de la couche d'entrée
-        
+        for poids, biais in zip(self.poids, self.biais):
+            Z = np.dot(poids, A) + biais    # Calcul linéaire  Z = WX + b
+            A = self.sigmoid(Z)   # Applique la fonction d'activation sigmoid
+        return A    # Sortie finale du réseau
+
+
+# Example d'utilisation
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)
+x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
+output = mlp1.forward(x_iputs)
     
+print("Sortie du MLP est :",output)
