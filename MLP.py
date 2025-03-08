@@ -10,11 +10,11 @@ class MLP:
         
         # Initialisation des poids et biais
         self.poids = []  # Liste des matrices de poids
-        self.biais = []  # Liste des biais
+        self.biais = []  # Liste des vecteurs de biais
         
         # Couche d'entrée  à première couche cachée
         self.poids.append(np.random.randn(couche_cachés[0], n_entrées))
-        self.biais.append(np.random.randn(couche_cachés[0], 1))
+        self.biais.append(np.random.randn(couche_cachés[0], 1))   # chaque neuron dans la première couche cachée a un biais associé.
         
         # (nombre de neurones dans la couche suivante) x (nombre de neurones dans la couche actuelle + 1) (le +1 est pour le biais).
         for i in range (1, len(couche_cachés)):
@@ -35,7 +35,7 @@ class MLP:
         sig = self.sigmoid(x)
         return sig * (1 - sig)
     
-    # Fonction de propagation vers l'avant
+    # Fonction de propagation vers l'avant (propager les entrées vers la sortie à travers le réseau)
     def forward(self, X):
         """
         Propagation vers l'avant à travers le réseau.
@@ -50,7 +50,7 @@ class MLP:
 
 
 # Example d'utilisation
-mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)   # 2 entrées, 3 neurones dans la première couche cachée, 2 neurones dans la deuxième couche cachée, et 1 neurone de sortie.
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
 output = mlp1.forward(x_iputs)
     
