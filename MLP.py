@@ -52,18 +52,9 @@ class MLP:
             activa.append(A)
         return A , activa, Valeurs_Z   # Sortie finale du réseau + les valeurs 
     
-    # Fonction de retropropagation du gradient de l'erreur (MAJ les poids avec la descente de gradient)
-    def backward(self, X, valeurs_vrais):
-        """
-        valeurs_vrais -- Valeurs vraies de sortie
-        """
-        # propagation avant pour recuperer les activ et les Z
-        activa, sortie_predite, Valeurs_Z = self.forward(X)
-        # Calcul de l'erreur (prédite et réelles)
-        erreur = valeurs_vrais - sortie_predite
-        # Calcul du gradient de l'erreur
-        gradient = erreur * self.derivé_sigmoid(sortie_predite)
-        
+
+    # Fonction de retropropagation du gradient (MAJ les poids avec la descente de gradient)
+ main
 
 
 # Example d'utilisation
