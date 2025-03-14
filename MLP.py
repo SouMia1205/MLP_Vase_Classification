@@ -32,10 +32,10 @@ class MLP:
     
     # Dérivée de la sigmoid 
     def derivé_sigmoid(self, x):
-        sig = self.sigmoid(x)
-        return sig * (1 - sig)
+        return x * (1 - x) 
     
     # Fonction de propagation vers l'avant (propager les entrées vers la sortie à travers le réseau)
+    # ajouter variable pour renvoie toutes les valeurs intermédiaires pour retropropagation
     def forward(self, X):
         """
         Propagation vers l'avant à travers le réseau.
@@ -43,10 +43,17 @@ class MLP:
         :return -- Sortie du réseau aprés activation.
         """
         A = X  # Initialisation de la sortie de la couche d'entrée
+        activa = [X]  # Stocker les actiovations pour la retropropagation
+        Valeurs_Z = [] # Stocker les z pour calculer les gradient 
         for poids, biais in zip(self.poids, self.biais):
             Z = np.dot(poids, A) + biais    # Calcul linéaire  Z = WX + b
             A = self.sigmoid(Z)   # Applique la fonction d'activation sigmoid
-        return A    # Sortie finale du réseau
+            Valeurs_Z.append(Z)
+            activa.append(A)
+        return A , activa, Valeurs_Z   # Sortie finale du réseau + les valeurs 
+    
+    # Fonction de retropropagation du gradient (MAJ les poids avec la descente de gradient)
+    
 
 
 # Example d'utilisation
