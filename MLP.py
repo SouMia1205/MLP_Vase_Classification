@@ -53,8 +53,27 @@ class MLP:
         return A , activa, Valeurs_Z   # Sortie finale du réseau + les valeurs 
     
     # Fonction de retropropagation du gradient (MAJ les poids avec la descente de gradient)
-    
-
+    def backward(self, X , Valeurs_vrais):
+        """
+        Valeurs_vrais -- Valeurs vraies de sortie 
+        X -- Données d'entrée 
+        """
+        # propagation avant pour obtenir les activations et les valeurs Z
+        valeur_predite, activa, Valeurs_Z = self.forward(X)
+        
+        # Calcul de l'erreur de sortie (entre la sortie prédite et la sortie vraie)
+        erreur = Valeurs_vrais - valeur_predite 
+        
+        # Calcul du gradient de l'erreur pour la couche de sortie
+        gradient_sortie = erreur * self.derivé_sigmoid(valeur_predite)  # dL/dA * dA/dZ
+        
+        # Mise à jour les poids de la dernière couche vers la couche précédente
+        for i in range(len(self.poids) -1, -1, -1):
+            dP = np.dot(gradient_sortie, activa[i].T)  # dL/dA * dA/dZ * dZ/dW  gradient des poids
+            self.poids[i] += dP  # Mise à jour des poids
+            dB = np.sum(gradient_sortie, axis=1, keepdims=True)  # dL/dA * dA/dZ * dZ/dB  gradient des biais
+            self.biais[i] += dB  # Mise à jour des biais
+        
 
 # Example d'utilisation
 mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)   # 2 entrées, 3 neurones dans la première couche cachée, 2 neurones dans la deuxième couche cachée, et 1 neurone de sortie.
