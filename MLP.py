@@ -61,7 +61,8 @@ class MLP:
         activa, sortie_predite, Valeurs_Z = self.forward(X)
         # Calcul de l'erreur (prédite et réelles)
         erreur = valeurs_vrais - sortie_predite
-        
+        # Calcul du gradient de l'erreur
+        gradient = erreur * self.derivé_sigmoid(sortie_predite)
         
 
 
