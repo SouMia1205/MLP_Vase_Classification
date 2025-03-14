@@ -32,8 +32,7 @@ class MLP:
     
     # Dérivée de la sigmoid 
     def derivé_sigmoid(self, x):
-        sig = self.sigmoid(x)
-        return sig * (1 - sig)
+        return x * (1 - x) 
     
     # Fonction de propagation vers l'avant (propager les entrées vers la sortie à travers le réseau)
     def forward(self, X):
