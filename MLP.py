@@ -102,3 +102,19 @@ mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
 # 🔹 Test sur les données d'entraînement
 output = mlp1.forward(x_iputs)[0]
 print("Sortie après entraînement :", output)
+
+
+# Données XOR
+X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+Y = np.array([[0, 1, 1, 0]])
+
+# Initialisation du réseau
+mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
+
+# Entraînement
+mlp_xor.entrainement(X, Y, n_iteration=10000, lr=0.1)
+
+# Test du modèle
+sortie = mlp_xor.forward(X)[0]
+print("\nSortie après entraînement :")
+print(sortie)
