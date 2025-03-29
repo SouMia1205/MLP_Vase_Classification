@@ -118,3 +118,7 @@ mlp_xor.entrainement(X, Y, n_iteration=10000, lr=0.1)
 sortie = mlp_xor.forward(X)[0]
 print("\nSortie après entraînement :")
 print(sortie)
+
+
+
+data = np.loadtxt("data.txt") 
