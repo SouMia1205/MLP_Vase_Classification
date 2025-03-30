@@ -113,7 +113,7 @@ Y = np.array([[0, 1, 1, 0]])
 mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
 
 # Entraînement
-mlp_xor.entrainement(X, Y, n_iteration=10000, lr=0.1)
+mlp_xor.entrainement(X, Y, n_iteration=500)
 
 # Test du modèle
 sortie = mlp_xor.forward(X)[0]
