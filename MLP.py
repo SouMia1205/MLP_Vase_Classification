@@ -90,7 +90,7 @@ class MLP:
             if j % 100 == 0:
                 print(f"Itération {j} : Erreur = {np.mean((self.forward(X)[0] - Valeurs_vrais) ** 2)}")
                 
-
+"""
 # Example d'utilisation
 mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)   # 2 entrées, 3 neurones dans la première couche cachée, 2 neurones dans la deuxième couche cachée, et 1 neurone de sortie.
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
@@ -99,9 +99,10 @@ output = mlp1.forward(x_iputs)
 print("Sortie du MLP est :",output)
 
 mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
-# 🔹 Test sur les données d'entraînement
+# Test sur les données d'entraînement
 output = mlp1.forward(x_iputs)[0]
 print("Sortie après entraînement :", output)
+"""
 
 
 # Données XOR
