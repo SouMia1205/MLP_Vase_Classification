@@ -116,7 +116,7 @@ mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
 mlp_xor.entrainement(Xor, sortie, n_iteration=500)
 
 # Test du modèle
-sortie = mlp_xor.forward(X)[0]
+sortie = mlp_xor.forward(Xor)[0]
 print("\nSortie après entraînement :")
 print(sortie)
 
