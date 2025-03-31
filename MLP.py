@@ -106,14 +106,14 @@ print("Sortie après entraînement :", output)
 
 
 # Données XOR
-X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
-Y = np.array([[0, 1, 1, 0]])
+Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+sortie = np.array([[0, 1, 1, 0]])
 
 # Initialisation du réseau
 mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
 
 # Entraînement
-mlp_xor.entrainement(X, Y, n_iteration=500)
+mlp_xor.entrainement(Xor, sortie, n_iteration=500)
 
 # Test du modèle
 sortie = mlp_xor.forward(X)[0]
