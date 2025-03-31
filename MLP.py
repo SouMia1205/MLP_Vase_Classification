@@ -123,3 +123,4 @@ print(sortie)
 
 
 data = np.loadtxt("data.txt") 
+print(data) 
