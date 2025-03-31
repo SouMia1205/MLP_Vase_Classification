@@ -37,11 +37,6 @@ class MLP:
     # Fonction de propagation vers l'avant (propager les entrées vers la sortie à travers le réseau)
     # ajouter variable pour renvoie toutes les valeurs intermédiaires pour retropropagation
     def forward(self, X):
-        """
-        Propagation vers l'avant à travers le réseau.
-        :X -- Données d'entrée (n_entrées, n_exemples)
-        :return -- Sortie du réseau aprés activation.
-        """
         A = X  # Initialisation de la sortie de la couche d'entrée
         activa = [X]  # Stocker les actiovations pour la retropropagation
         Valeurs_Z = [] # Stocker les z pour calculer les gradient 
@@ -122,5 +117,7 @@ print(sortie)
 
 
 
-data = np.loadtxt("data.txt") 
-print(data) 
+données = np.loadtxt("data.txt") 
+print(données) 
+
+entrées = données [:, : -1]
