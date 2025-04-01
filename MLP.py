@@ -116,7 +116,7 @@ print("\nSortie après entraînement :")
 print(sortie)
 
 
-
+# lir le fichier text
 données = np.loadtxt("data.txt") 
 print(données) 
 
