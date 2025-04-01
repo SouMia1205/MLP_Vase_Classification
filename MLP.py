@@ -47,108 +47,73 @@ class MLP:
             activa.append(A)
         return A , activa, Valeurs_Z   # Sortie finale du réseau + les valeurs 
     
-    # Fonction de rétropropagation du gradient 
+   # Fonction de rétropropagation du gradient 
+    def backward(self, X, Valeurs_vrais, taux_apprentissage=0.01):
+        # Propagation avant pour obtenir les activations et les valeurs Z
+        valeur_predite, activa, Valeurs_Z = self.forward(X)
 
-    def backward(self, X, Valeurs_vrais):
-    # Propagation avant pour obtenir les activations et les valeurs Z
-     valeur_predite, activa, Valeurs_Z = self.forward(X)
+        # Calcul de l'erreur de sortie (différence entre la sortie prédite et la sortie vraie)
+        erreur = Valeurs_vrais - valeur_predite
 
-    # Calcul de l'erreur de sortie (différence entre la sortie prédite et la sortie vraie)
-     erreur = [[Valeurs_vrais[i][j] - valeur_predite[i][j] for j in range(len(Valeurs_vrais[i]))] 
-              for i in range(len(Valeurs_vrais))]
+        # Calcul du gradient de l'erreur pour la couche de sortie
+        gradient_sortie = erreur * self.derivé_sigmoid(valeur_predite)
 
-    # Calcul du gradient de l'erreur pour la couche de sortie
-     gradient_sortie = [[erreur[i][j] * self.derivé_sigmoid(valeur_predite[i][j]) 
-                        for j in range(len(erreur[i]))] for i in range(len(erreur))]
+        # Mise à jour des poids de la dernière couche vers la couche précédente
+        for i in range(len(self.poids) - 1, -1, -1):
+            # Calcul du gradient des poids
+            dP = np.dot(gradient_sortie, activa[i].T)
+            self.poids[i] -= taux_apprentissage * dP
 
-    # Mise à jour des poids de la dernière couche vers la couche précédente
-     for i in range(len(self.poids) - 1, -1, -1):
-        # Calcul du gradient des poids
-        dP = [[0] * len(activa[i]) for _ in range(len(gradient_sortie))]
-        for ligne in range(len(gradient_sortie)):
-            for col in range(len(activa[i])):
-                somme = 0
-                for k in range(len(gradient_sortie[ligne])):
-                    somme += gradient_sortie[ligne][k] * activa[i][col]
-                dP[ligne][col] = somme
+            # Calcul du gradient des biais
+            dB = np.sum(gradient_sortie, axis=1, keepdims=True)
+            self.biais[i] -= taux_apprentissage * dB
 
-        # Mise à jour des poids (descente de gradient)
-        for ligne in range(len(self.poids[i])):
-            for col in range(len(self.poids[i][ligne])):
-                self.poids[i][ligne][col] -= dP[ligne][col] * 0.01  # 0.01 est le taux d'apprentissage
+            # Calcul du gradient pour la couche précédente
+            if i > 0:
+                gradient_sortie = np.dot(self.poids[i].T, gradient_sortie) * self.derivé_sigmoid(activa[i])
 
-        # Calcul du gradient des biais
-        dB = [[0] for _ in range(len(gradient_sortie))]
-        for ligne in range(len(gradient_sortie)):
-            somme = 0
-            for col in range(len(gradient_sortie[ligne])):
-                somme += gradient_sortie[ligne][col]
-            dB[ligne][0] = somme
-
-        # Mise à jour des biais
-        for ligne in range(len(self.biais[i])):
-            self.biais[i][ligne][0] -= dB[ligne][0] * 0.01
-
-        # Calcul du gradient pour la couche précédente
-        if i > 0:
-            gradient_temp = [[0] * len(self.poids[i]) for _ in range(len(gradient_sortie))]
-            for ligne in range(len(gradient_temp)):
-                for col in range(len(self.poids[i])):
-                    somme = 0
-                    for k in range(len(gradient_sortie[ligne])):
-                        somme += self.poids[i][k][col] * gradient_sortie[ligne][k]
-                    gradient_temp[ligne][col] = somme * self.derivé_sigmoid(activa[i][col])
-            gradient_sortie = gradient_temp
     # Fonction d'entraînement du réseau
     def entrainement(self, X, Valeurs_vrais, n_iteration=500):
-      for j in range(n_iteration):
-        self.backward(X, Valeurs_vrais)  # Met à jour les poids avec la rétropropagation
+        for j in range(n_iteration):
+            self.backward(X, Valeurs_vrais)  # Met à jour les poids avec la rétropropagation
 
-        # Affichage de l'erreur toutes les 100 itérations
-        if j % 100 == 0:
-            # Calcul manuel de l'erreur quadratique moyenne
-            erreur_total = 0
-            for ligne in range(len(X)):
-                for col in range(len(X[ligne])):
-                    erreur_total += (self.forward(X)[0][ligne][col] - Valeurs_vrais[ligne][col]) ** 2
-            erreur_moyenne = erreur_total / (len(X) * len(X[0]))
-            print(f"Itération {j} : Erreur = {erreur_moyenne}")
+            # Affichage de l'erreur toutes les 100 itérations
+            if j % 100 == 0:
+                # Calcul de l'erreur quadratique moyenne
+                erreur_moyenne = np.mean((self.forward(X)[0] - Valeurs_vrais) ** 2)
+                print(f"Itération {j} : Erreur = {erreur_moyenne}")
 
-            
-    # Example d'utilisation
-    mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)   
-    x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
-    output = mlp1.forward(x_iputs)
-    
-    print("Sortie du MLP est (QST 1):",output)
+# Exemple d'utilisation
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)
+x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
+output = mlp1.forward(x_iputs)
+print("Sortie du MLP est (QST 1):", output)
 
-    mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
-    # Test sur les données d'entraînement
-    output = mlp1.forward(x_iputs)[0]
-    print("Sortie après entraînement (QST 1):", output)
+mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
+output = mlp1.forward(x_iputs)[0]
+print("Sortie après entraînement (QST 1):", output)
 
-    # Données XOR
-    Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
-    sortie = np.array([[0, 1, 1, 0]])
+# Données XOR
+Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+sortie = np.array([[0, 1, 1, 0]])
 
-    # Initialisation du réseau
-    mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
+# Initialisation du réseau
+mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
 
-    # Entraînement
-    mlp_xor.entrainement(Xor, sortie, n_iteration=500)
+# Entraînement
+mlp_xor.entrainement(Xor, sortie, n_iteration=500)
 
-    # Test du modèle
-    sortie = mlp_xor.forward(Xor)[0]
-    print("\nSortie après entraînement (XOR) :")
-    print(sortie)
+# Test du modèle
+sortie = mlp_xor.forward(Xor)[0]
+print("\nSortie après entraînement (XOR) :")
+print(sortie)
 
+# lir le fichier text
+données = np.loadtxt(r"C:\Users\pc\Desktop\MLP_Vase_Classification\data\data.txt") 
+print(" les  données") 
+print(données[:10])  
 
-    # lir le fichier text
-    données = np.loadtxt(r"C:\Users\pc\Desktop\MLP_Vase_Classification\data\data.txt") 
-    print(" les  données") 
-    print(données[:10])  
-
-    entrées = données [:, : -1]
+entrées = données [:, : -1]
 sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
 mlp_vase = MLP(n_entrées=entrées.shape[1], couche_cachés=[10, 5], n_sorties=1)
 
@@ -160,3 +125,4 @@ sortie_predite = mlp_vase.forward(entrées.T)[0]
 
 print("\nSortie après entraînement sur le dataset vase :")
 print(sortie_predite[:10])  # Afficher les 10 premières prédictions
+
