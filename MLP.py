@@ -117,7 +117,8 @@ print(sortie)
 
 
 # lir le fichier text
-données = np.loadtxt("data.txt") 
-print(données) 
+données = np.loadtxt(r"C:\Users\pc\Desktop\MLP_Vase_Classification\data\data.txt") 
+print(" les  données") 
+print(données[:10])  
 
 entrées = données [:, : -1]
