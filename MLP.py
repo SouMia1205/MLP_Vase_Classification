@@ -112,15 +112,13 @@ print(données[:10])
 
 entrées = données [:, : -1]
 sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
-# Définition du réseau de neurones
 mlp_vase = MLP(n_entrées=entrées.shape[1], couche_cachés=[10, 5], n_sorties=1)
 
-# Entraînement du modèle sur les données
+# Entrain du modèle sur les données
 mlp_vase.entrainement(entrées.T, sorties.T, n_iteration=500)
 
-# Tester le modèle sur les données d'entraînement
+# Tester le modèle sur les données d'entrain
 sortie_predite = mlp_vase.forward(entrées.T)[0]
 
-# Afficher quelques résultats pour voir la performance du modèle
 print("\nSortie après entraînement sur le dataset vase :")
 print(sortie_predite[:10])  # Afficher les 10 premières prédictions
