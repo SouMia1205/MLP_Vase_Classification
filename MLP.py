@@ -126,3 +126,24 @@ sortie_predite = mlp_vase.forward(entrées.T)[0]
 print("\nSortie après entraînement sur le dataset vase :")
 print(sortie_predite[:10])  # Afficher les 10 premières prédictions
 
+# Demander à l'utilisateur d'entrer les coordonnées du point séparées par des espaces
+point_input = input("Entrez les coordonnées du point (séparées par des espaces) : ")
+
+# Convertir l'entrée en une liste de nombres
+point_values = np.array([float(x) for x in point_input.split()]).reshape(-1, 1)
+
+# Vérifier si le nombre de features correspond à celui du modèle
+if point_values.shape[0] != mlp_vase.n_entrées:
+    print(f"Erreur : Ce modèle attend {mlp_vase.n_entrées} features, mais {point_values.shape[0]} ont été fournis.")
+else:
+    # Prédiction
+    prediction = mlp_vase.forward(point_values)[0]
+
+    # Seuil de classification (0.5 par défaut)
+    classe = 1 if prediction >= 0.5 else 0  
+
+    # Affichage du résultat
+    print(f"Sortie brute du MLP : {prediction}")
+    print(f"Classe prédite : {'Vase' if classe == 1 else 'Non Vase'}")
+
+
