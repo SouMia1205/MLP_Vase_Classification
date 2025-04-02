@@ -1,5 +1,6 @@
 # pylint: disable=all
 import numpy as np  
+from sklearn.model_selection import train_test_split
 
 
 class MLP:
@@ -102,33 +103,25 @@ print(données[:10])
 
 entrées = données [:, : -1]
 sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
-mlp_vase = MLP(n_entrées=entrées.shape[1], couche_cachés=[10, 5], n_sorties=1)
 
-# Entrain du modèle sur les données
-mlp_vase.entrainement(entrées.T, sorties.T, n_iteration=500)
+# Diviser les données en 80% entraînement et 20% test
+X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[10, 5], n_sorties=1, alpha=0.1)
+mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000)
 
-# Tester le modèle sur les données d'entrain
-sortie_predite = mlp_vase.forward(entrées.T)[0]
+sortie_predite = mlp_vase.forward(X_test.T)[0]
 
-print("\nSortie après entraînement sur le dataset vase :")
-print(sortie_predite[:10])  # Afficher les 10 premières prédictions
+# Arrondir les sorties pour obtenir des prédictions binaires
+sortie_binaire = (sortie_predite > 0.5).astype(int)
 
-# Demander à l'utilisateur d'entrer les coordonnées du point séparées par des espaces
-point_input = input("Entrez les coordonnées du point (séparées par des espaces) : ")
 
-# Convertir l'entrée en une liste de nombres
-point_values = np.array([float(x) for x in point_input.split()]).reshape(-1, 1)
+correct_predictions = 0
+total_predictions = y_test.T.shape[1]
 
-# Vérifier si le nombre de features correspond à celui du modèle
-if point_values.shape[0] != mlp_vase.n_entrées:
-    print(f"Erreur : Ce modèle attend {mlp_vase.n_entrées} features, mais {point_values.shape[0]} ont été fournis.")
-else:
-    # Prédiction
-    prediction = mlp_vase.forward(point_values)[0]
+for i in range(total_predictions):
+    if sortie_binaire[0, i] == y_test.T[0, i]:
+        correct_predictions += 1
 
-    # Seuil de classification (0.5 par défaut)
-    classe = 1 if prediction >= 0.5 else 0  
+accuracy = (correct_predictions / total_predictions) * 100
+print(f"Exactitude du modèle sur les données de test : {accuracy:.2f}%")
 
-    # Affichage du résultat
-    print(f"Sortie brute du MLP : {prediction}")
-    print(f"Classe prédite : {'Vase' if classe == 1 else 'Non Vase'}")
