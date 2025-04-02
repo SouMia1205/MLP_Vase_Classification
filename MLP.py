@@ -3,10 +3,12 @@ import numpy as np
 
 
 class MLP:
-    def __init__(self, n_entrées, couche_cachés,n_sorties):
+    def __init__(self, n_entrées, couche_cachés,n_sorties, alpha=0.01):
         self.n_entrées = n_entrées  # nombre d'entrées (sans le biais)
         self.couche_cachés = couche_cachés  # Liste du nombre de neurones dans chaque couche cachée
         self.n_sorties = n_sorties  # nombre de neurones de sortie.
+        self.alpha = alpha  # Définition du taux d'apprentissage
+
         
         # Initialisation des poids et biais
         self.poids = []  # Liste des matrices de poids
@@ -37,54 +39,39 @@ class MLP:
     # Fonction de propagation vers l'avant (propager les entrées vers la sortie à travers le réseau)
     # ajouter variable pour renvoie toutes les valeurs intermédiaires pour retropropagation
     def forward(self, X):
-        A = X  # Initialisation de la sortie de la couche d'entrée
-        activa = [X]  # Stocker les actiovations pour la retropropagation
-        Valeurs_Z = [] # Stocker les z pour calculer les gradient 
+        A = X
+        activa = [X]
+        Valeurs_Z = []
         for poids, biais in zip(self.poids, self.biais):
-            Z = np.dot(poids, A) + biais    # Calcul linéaire  Z = WX + b
-            A = self.sigmoid(Z)   # Applique la fonction d'activation sigmoid
+            Z = np.dot(poids, A) + biais
+            A = self.sigmoid(Z)
             Valeurs_Z.append(Z)
             activa.append(A)
-        return A , activa, Valeurs_Z   # Sortie finale du réseau + les valeurs 
+        return A, activa, Valeurs_Z
     
-   # Fonction de rétropropagation du gradient 
-    def backward(self, X, Valeurs_vrais, taux_apprentissage=0.01):
-        # Propagation avant pour obtenir les activations et les valeurs Z
+    def backward(self, X, Valeurs_vrais):
         valeur_predite, activa, Valeurs_Z = self.forward(X)
-
-        # Calcul de l'erreur de sortie (différence entre la sortie prédite et la sortie vraie)
         erreur = Valeurs_vrais - valeur_predite
-
-        # Calcul du gradient de l'erreur pour la couche de sortie
         gradient_sortie = erreur * self.derivé_sigmoid(valeur_predite)
-
-        # Mise à jour des poids de la dernière couche vers la couche précédente
+        
         for i in range(len(self.poids) - 1, -1, -1):
-            # Calcul du gradient des poids
             dP = np.dot(gradient_sortie, activa[i].T)
-            self.poids[i] -= taux_apprentissage * dP
-
-            # Calcul du gradient des biais
+            self.poids[i] += self.alpha * dP
             dB = np.sum(gradient_sortie, axis=1, keepdims=True)
-            self.biais[i] -= taux_apprentissage * dB
-
-            # Calcul du gradient pour la couche précédente
+            self.biais[i] += self.alpha * dB
             if i > 0:
                 gradient_sortie = np.dot(self.poids[i].T, gradient_sortie) * self.derivé_sigmoid(activa[i])
-
-    # Fonction d'entraînement du réseau
-    def entrainement(self, X, Valeurs_vrais, n_iteration=500):
+    
+    def entrainement(self, X, Valeurs_vrais, n_iteration=5000):
         for j in range(n_iteration):
-            self.backward(X, Valeurs_vrais)  # Met à jour les poids avec la rétropropagation
-
-            # Affichage de l'erreur toutes les 100 itérations
-            if j % 100 == 0:
-                # Calcul de l'erreur quadratique moyenne
+            self.backward(X, Valeurs_vrais)
+            if j % 1000 == 0:
                 erreur_moyenne = np.mean((self.forward(X)[0] - Valeurs_vrais) ** 2)
                 print(f"Itération {j} : Erreur = {erreur_moyenne}")
 
+
 # Exemple d'utilisation
-mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1)
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
 output = mlp1.forward(x_iputs)
 print("Sortie du MLP est (QST 1):", output)
@@ -98,15 +85,15 @@ Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
 sortie = np.array([[0, 1, 1, 0]])
 
 # Initialisation du réseau
-mlp_xor = MLP(n_entrées=2, couche_cachés=[2], n_sorties=1)
+mlp_xor = MLP(n_entrées=2, couche_cachés=[4], n_sorties=1, alpha=0.1)
 
 # Entraînement
-mlp_xor.entrainement(Xor, sortie, n_iteration=500)
+mlp_xor.entrainement(Xor, sortie, n_iteration=5000)
 
 # Test du modèle
-sortie = mlp_xor.forward(Xor)[0]
+sortie_predite = mlp_xor.forward(Xor)[0]
 print("\nSortie après entraînement (XOR) :")
-print(sortie)
+print(sortie_predite)
 
 # lir le fichier text
 données = np.loadtxt(r"C:\Users\pc\Desktop\MLP_Vase_Classification\data\data.txt") 
@@ -145,5 +132,3 @@ else:
     # Affichage du résultat
     print(f"Sortie brute du MLP : {prediction}")
     print(f"Classe prédite : {'Vase' if classe == 1 else 'Non Vase'}")
-
-
