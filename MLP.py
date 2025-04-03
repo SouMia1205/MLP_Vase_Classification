@@ -125,3 +125,28 @@ for i in range(total_predictions):
 accuracy = (correct_predictions / total_predictions) * 100
 print(f"Exactitude du modèle sur les données de test : {accuracy:.2f}%")
 
+
+
+# Demander à l'utilisateur de saisir les coordonnées du point
+try:
+    coordonnees = input("Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
+    coordonnees = [float(x) for x in coordonnees.split()]
+    
+    # Vérifier si le nombre de coordonnées est correct
+    if len(coordonnees) != entrées.shape[1]:
+        print(f"Le nombre de coordonnées n'est pas correct. Ce modèle attend {entrées.shape[1]} coordonnées.")
+    else:
+        #  tester le point
+        point_test = np.array([coordonnees])  
+        sortie_point = mlp_vase.forward(point_test.T)[0]  # Prédiction pour ce point
+
+        # Arrondir la sortie pour obtenir la prédiction binaire
+        predicted_class = 1 if sortie_point > 0.5 else 0
+
+        # Vérifier si ce point appartient à la vase ou non
+        if predicted_class == 1:
+            print(f"Le point {coordonnees} appartient à la vase.")
+        else:
+            print(f"Le point {coordonnees} n'appartient pas à la vase.")
+except ValueError:
+    print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
