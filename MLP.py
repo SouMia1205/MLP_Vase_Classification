@@ -115,8 +115,13 @@ sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie
 
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[10, 5], n_sorties=1, alpha=0.1) #entrainent
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[50,30,10], n_sorties=1, alpha=0.01) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000) 
+
+# affichage du cout pour verifier l'apprentissage
+sortie_entrain = mlp_vase.forward(X_train.T)[0]
+erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
+print(f"Cout final du modele apres l'entrainement est : {erreur_entrain}")
 
 def tester_modele(mlp,  X_test,y_test):
     sortie_predite = mlp.forward(X_test.T)[0]
@@ -133,30 +138,31 @@ def tester_modele(mlp,  X_test,y_test):
     return precision
 
 precision = tester_modele(mlp_vase, X_test,y_test)
-print(f"Exactitude du modèle sur les données de test : {precision:.2f}%")
+print(f"Exactitude du modele sur les données de test : {precision:.2f}%")
 
 
 
-# Demander à l'utilisateur de saisir les coordonnées du point
-try:
-    coordonnees = input("Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
-    coordonnees = [float(x) for x in coordonnees.split()]
-    
-    # Vérifier si le nombre de coordonnées est correct
-    if len(coordonnees) != entrées.shape[1]:
-        print(f"Le nombre de coordonnées n'est pas correct. Ce modèle attend {entrées.shape[1]} coordonnées.")
-    else:
-        #  tester le point
-        point_test = np.array([coordonnees])  
-        sortie_point = mlp_vase.forward(point_test.T)[0]  # Prédiction pour ce point
-
-        # Arrondir la sortie pour obtenir la prédiction binaire
-        predicted_class = 1 if sortie_point > 0.5 else 0
-
-        # Vérifier si ce point appartient à la vase ou non
-        if predicted_class == 1:
-            print(f"Le point {coordonnees} appartient à la vase.")
+# Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
+for i in range(3):
+    try:
+        coordonnees = input(f"[{i+1}]Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
+        coordonnees = [float(x) for x in coordonnees.split()]
+        
+        # Vérifier si le nombre de coordonnées est correct
+        if len(coordonnees) != entrées.shape[1]:
+            print(f"Le nombre de coordonnées n'est pas correct. Ce modèle attend {entrées.shape[1]} coordonnées.")
         else:
-            print(f"Le point {coordonnees} n'appartient pas à la vase.")
-except ValueError:
-    print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
+            #  tester le point
+            point_test = np.array([coordonnees])  
+            sortie_point = mlp_vase.forward(point_test.T)[0]  # Prédiction pour ce point
+
+            # Arrondir la sortie pour obtenir la prédiction binaire
+            predicted_class = 1 if sortie_point > 0.5 else 0
+
+            # Vérifier si ce point appartient à la vase ou non
+            if predicted_class == 1:
+                print(f"Le point {coordonnees} appartient à la vase.")
+            else:
+                print(f"Le point {coordonnees} n'appartient pas à la vase.")
+    except ValueError:
+        print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
