@@ -67,8 +67,17 @@ class MLP:
         for j in range(n_iteration):
             self.backward(X, Valeurs_vrais)
             if j % 1000 == 0:
-                erreur_moyenne = np.mean((self.forward(X)[0] - Valeurs_vrais) ** 2)
-                print(f"Itération {j} : Erreur = {erreur_moyenne}")
+                sortie = self.forward(X)[0]
+                erreur_moy = self.cout(sortie, Valeurs_vrais)
+                print(f"Itération {j} : Erreur = {erreur_moy}")
+    
+    def cout(self, sortie_predite,sortie_vraie):
+        somme = 0
+        n= sortie_predite.shape[1]
+        for i in range(n):
+            erreur = sortie_vraie[0,i] - sortie_predite[0, i]
+            somme = somme + erreur ** 2
+        return somme / n
 
 
 # Exemple d'utilisation
@@ -106,24 +115,25 @@ sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie
 
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[10, 5], n_sorties=1, alpha=0.1)
-mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000)
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[10, 5], n_sorties=1, alpha=0.1) #entrainent
+mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000) 
 
-sortie_predite = mlp_vase.forward(X_test.T)[0]
+def tester_modele(mlp,  X_test,y_test):
+    sortie_predite = mlp.forward(X_test.T)[0]
+    # arrondir les sorties pour des predictions binairs
+    sortie_binaire = (sortie_predite > 0.5).astype(int)
+    predictions_vrais = 0
+    total_predictions = y_test.T.shape[1]
+    # Comaraiosn de chaque prediction
+    for i in range(total_predictions):
+        if sortie_binaire[0, i] == y_test.T[0,i]:
+            predictions_vrais +=1
+    # Calculer la precision
+    precision = (predictions_vrais/total_predictions) *100
+    return precision
 
-# Arrondir les sorties pour obtenir des prédictions binaires
-sortie_binaire = (sortie_predite > 0.5).astype(int)
-
-
-correct_predictions = 0
-total_predictions = y_test.T.shape[1]
-
-for i in range(total_predictions):
-    if sortie_binaire[0, i] == y_test.T[0, i]:
-        correct_predictions += 1
-
-accuracy = (correct_predictions / total_predictions) * 100
-print(f"Exactitude du modèle sur les données de test : {accuracy:.2f}%")
+precision = tester_modele(mlp_vase, X_test,y_test)
+print(f"Exactitude du modèle sur les données de test : {precision:.2f}%")
 
 
 
