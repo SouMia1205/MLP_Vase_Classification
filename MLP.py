@@ -115,7 +115,7 @@ sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie
 
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[20, 10], n_sorties=1, alpha=0.001) #entrainent
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[20, 10], n_sorties=1, alpha=0.01) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000) 
 
 # affichage du cout pour verifier l'apprentissage
