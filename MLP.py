@@ -44,7 +44,7 @@ class MLP:
         activa = [X]
         Valeurs_Z = []
         for poids, biais in zip(self.poids, self.biais):
-            Z = np.dot(poids, A) + biais
+            Z = np.dot(poids, A) + biais    # Z = W*A + b
             A = self.sigmoid(Z)
             Valeurs_Z.append(Z)
             activa.append(A)
@@ -56,9 +56,9 @@ class MLP:
         gradient_sortie = erreur * self.derivé_sigmoid(valeur_predite)
         
         for i in range(len(self.poids) - 1, -1, -1):
-            dP = np.dot(gradient_sortie, activa[i].T)
+            dP = np.dot(gradient_sortie, activa[i].T)   
             self.poids[i] += self.alpha * dP
-            dB = np.sum(gradient_sortie, axis=1, keepdims=True)
+            dB = np.sum(gradient_sortie, axis=1, keepdims=True)  #La somme est effectuée sur les colonnes keepdims changer [0.6, 0.3] --> [[0.6], [0.3]] (format)
             self.biais[i] += self.alpha * dB
             if i > 0:
                 gradient_sortie = np.dot(self.poids[i].T, gradient_sortie) * self.derivé_sigmoid(activa[i])
@@ -114,7 +114,7 @@ entrées = données [:, : -1]
 sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
 
 # Diviser les données en 80% entraînement et 20% test
-X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
 mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[20, 10], n_sorties=1, alpha=0.01) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000) 
 
@@ -126,7 +126,7 @@ print(f"Cout final du modele apres l'entrainement est : {erreur_entrain}")
 def tester_modele(mlp,  X_test,y_test):
     sortie_predite = mlp.forward(X_test.T)[0]
     # arrondir les sorties pour des predictions binairs
-    sortie_binaire = (sortie_predite > 0.5).astype(int)
+    sortie_binaire = (sortie_predite > 0.5).astype(int)   
     predictions_vrais = 0
     total_predictions = y_test.T.shape[1]
     # Comaraiosn de chaque prediction
@@ -138,7 +138,7 @@ def tester_modele(mlp,  X_test,y_test):
     return precision
 
 precision = tester_modele(mlp_vase, X_test,y_test)
-print(f"Exactitude du modele sur les données de test : {precision:.2f}%")
+print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
 
 
 
