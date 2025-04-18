@@ -106,7 +106,7 @@ print("\nSortie après entraînement (XOR) :")
 print(sortie_predite)
 
 # lir le fichier text
-données = np.loadtxt(r"C:\Users\pc\Desktop\MLP_Vase_Classification\data\data.txt") 
+données = np.loadtxt(r"data/data.txt") 
 print(" les  données") 
 print(données[:10])  
 
