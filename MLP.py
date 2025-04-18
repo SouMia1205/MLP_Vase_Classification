@@ -184,26 +184,30 @@ print(f"Exactitude ou bien Performance du modele sur les données de test : {pre
 
 
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
-for i in range(3):
-    try:
-        coordonnees = input(f"[{i+1}]Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
-        coordonnees = [float(x) for x in coordonnees.split()]
-        
-        # Vérifier si le nombre de coordonnées est correct
-        if len(coordonnees) != entrées.shape[1]:
-            print(f"Le nombre de coordonnées n'est pas correct. Ce modèle attend {entrées.shape[1]} coordonnées.")
-        else:
-            #  tester le point
-            point_test = np.array([coordonnees])  
-            sortie_point = mlp_vase.forward(point_test.T)[0]  # Prédiction pour ce point
-
-            # Arrondir la sortie pour obtenir la prédiction binaire
-            predicted_class = 1 if sortie_point > 0.5 else 0
-
-            # Vérifier si ce point appartient à la vase ou non
-            if predicted_class == 1:
-                print(f"Le point {coordonnees} appartient à la vase.")
+def predire_points():
+    print("\nPrédictions pour les points:")
+    for i in range(3):
+        try:
+            coordonnees = input(f"[{i+1}]Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
+            coordonnees = [float(x) for x in coordonnees.split()]
+            
+            # Vérifier si le nombre de coordonnées est correct
+            if len(coordonnees) != entrées.shape[1]:
+                print(f"Le nombre de coordonnées n'est pas correct. Ce modèle attend {entrées.shape[1]} coordonnées.")
             else:
-                print(f"Le point {coordonnees} n'appartient pas à la vase.")
-    except ValueError:
-        print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
+                #  tester le point
+                point_test = np.array([coordonnees])  
+                sortie_point = mlp_vase.forward(point_test.T)[0]  # Prédiction pour ce point
+
+                # Arrondir la sortie pour obtenir la prédiction binaire
+                predicted_class = 1 if sortie_point > 0.5 else 0
+
+                # Vérifier si ce point appartient à la vase ou non
+                if predicted_class == 1:
+                    print(f"Le point {coordonnees} appartient à la vase.")
+                else:
+                    print(f"Le point {coordonnees} n'appartient pas à la vase.")
+        except ValueError:
+            print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
+
+predire_points()
