@@ -1,7 +1,8 @@
 # pylint: disable=all
 import numpy as np  
 from sklearn.model_selection import train_test_split
-
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class MLP:
     def __init__(self, n_entrées, couche_cachés,n_sorties, alpha=0.01):
@@ -78,6 +79,30 @@ class MLP:
             erreur = sortie_vraie[0,i] - sortie_predite[0, i]
             somme = somme + erreur ** 2
         return somme / n
+    
+    def afficher_vase(chemin_fichier):
+        try:
+            données = np.loadtxt(chemin_fichier)
+            # verifier que les données contient 3 features et la sortie 
+            if données.shape[1] < 4:
+                print("les données doivent contenir 3 features et 1 sortie")
+                return
+            features = données[:,3]
+            labels = données[:,-1]
+            figure = plt.figure(figsize=(10,7))
+            ax = figure.add_subplot(111,projection ='3d')
+            # couleur 0 == rouge , 1 == bleu
+            couleurs = ['red ' if label == 0 else 'blue' for label in labels]
+            ax.scatter(features[:,0],features[:,1],features[:,2], c = couleurs, s=60, edgecolors='k')
+            ax.set_title("Visualisation en 3D des données de Vase")
+            ax.set_xlabel("Caractéristique 1")
+            ax.set_ylabel("Caractéristique 2")
+            ax.set_zlabel("Caractéristique 3")
+            plt.show()
+        except Exception as e :
+            print(f"Erreur lors de la lecture ou de l'affichage des données : {e}")
+
+        
 
 
 # Exemple d'utilisation
@@ -115,7 +140,7 @@ sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie
 
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[20, 10], n_sorties=1, alpha=0.01) #entrainent
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[20, 10], n_sorties=1, alpha=0.001) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=5000) 
 
 # affichage du cout pour verifier l'apprentissage
