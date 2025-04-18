@@ -5,15 +5,15 @@ from sklearn.model_selection import train_test_split
 
 class MLP:
     def __init__(self, n_entrées, couche_cachés,n_sorties, alpha=0.01):
-        self.n_entrées = n_entrées  # nombre d'entrées (sans le biais)
-        self.couche_cachés = couche_cachés  # Liste du nombre de neurones dans chaque couche cachée
-        self.n_sorties = n_sorties  # nombre de neurones de sortie.
-        self.alpha = alpha  # Définition du taux d'apprentissage
+        self.n_entrées = n_entrées  
+        self.couche_cachés = couche_cachés  
+        self.n_sorties = n_sorties  
+        self.alpha = alpha  
 
         
         # Initialisation des poids et biais
-        self.poids = []  # Liste des matrices de poids
-        self.biais = []  # Liste des vecteurs de biais
+        self.poids = []  
+        self.biais = []  
         
         # Couche d'entrée  à première couche cachée
         self.poids.append(np.random.randn(couche_cachés[0], n_entrées))
