@@ -64,7 +64,7 @@ class MLP:
             if i > 0:
                 gradient_sortie = np.dot(self.poids[i].T, gradient_sortie) * self.derivé_sigmoid(activa[i])
     
-    def entrainement(self, X, Valeurs_vrais, n_iteration=5000):
+    def entrainement(self, X, Valeurs_vrais, n_iteration=10000):
         historique_erreur = []
         for j in range(n_iteration):
             self.backward(X, Valeurs_vrais)
@@ -73,6 +73,7 @@ class MLP:
                 erreur_moy = self.cout(sortie, Valeurs_vrais)
                 historique_erreur.append(erreur_moy)
                 print(f"Itération {j} : Erreur = {erreur_moy}")
+
         # afficher la courpe d'apprentissage
         plt.figure(figsize=(10, 5))
         plt.plot(range(0, n_iteration, 500), historique_erreur)
@@ -91,41 +92,30 @@ class MLP:
         return somme / n
     
     def afficher_vase(self, X, y):
-        """Affiche le vase en 3D"""
-        # Créer une figure 3D
-        fig = plt.figure(figsize=(10, 8))
-        ax = fig.add_subplot(111, projection='3d')
-        
-        # Extraire les points du vase et du bruit
-        y = y.flatten()
-        points_vase = X[y == 1]
-        points_bruit = X[y == 0]
-        
-        # Si les données sont en 2D, ajouter une coordonnée z (hauteur) basée sur x et y
+        '''Afficher la avse en 3D'''
+        figure = plt.figure(figsize=(10,8))
+        ax = figure.add_subplot(111, projection = '3d')
+        # si data en 2D , ajouter la 3éme dimension"
         if X.shape[1] == 2:
-            # Pour le vase: créer une hauteur qui dépend de la position (x,y)
-            # Cette formule peut être ajustée pour obtenir la forme du vase souhaitée
-            z_vase = np.abs(points_vase[:, 0]**2 - points_vase[:, 1]**2) * 0.5
-            
-            # Pour le bruit: utiliser une valeur aléatoire pour z
-            z_bruit = np.random.uniform(0, 0.5, size=len(points_bruit))
-            
-            # Afficher les points en 3D
-            ax.scatter(points_vase[:, 0], points_vase[:, 1], z_vase, c='red', s=10, label='Vase')
-            ax.scatter(points_bruit[:, 0], points_bruit[:, 1], z_bruit, c='blue', s=1, alpha=0.3, label='Bruit')
-        
-        # Si les données sont déjà en 3D
+            points_vase = X[y.flatten() == 1]
+            points_bruit = X[y.flatten() == 0]
+            # afficher 2D 
+            ax.scatter(points_vase[:, 0], points_vase[: , 1], c='red' ,s=10, label='Vase')
+            ax.scatter(points_bruit[:,0], points_bruit[:,1], c='blue',s=1,alpha=0.3,label='Bruit')
+        #si data en 3D
         elif X.shape[1] == 3:
-            ax.scatter(points_vase[:, 0], points_vase[:, 1], points_vase[:, 2], c='red', s=10, label='Vase')
-            ax.scatter(points_bruit[:, 0], points_bruit[:, 1], points_bruit[:, 2], c='blue', s=1, alpha=0.3, label='Bruit')
-        
-        # Paramétrage de la figure 3D
+            points_vase = X[y.flatten() == 1]
+            points_bruit = X[y.flatten() == 0]
+            #afficher end 3D
+            ax.scatter(points_vase[:, 0], points_vase[: , 1],points_vase[:,2], c='red' ,s=10, label='Vase')
+            ax.scatter(points_bruit[:,0], points_bruit[:,1],points_bruit[:,2], c='blue',s=1,alpha=0.3,label='Bruit')
         ax.set_title("Classification du vase en 3D")
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
+        if X.shape[1] == 3:
+            ax.set_zlabel("Z")
+
         ax.legend()
-        
         plt.show()
         
 
@@ -135,7 +125,6 @@ mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
 output = mlp1.forward(x_iputs)
 print("Sortie du MLP est (QST 1):", output)
-
 mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
 output = mlp1.forward(x_iputs)[0]
 print("Sortie après entraînement (QST 1):", output)
@@ -162,12 +151,14 @@ print(données[:10])
 
 entrées = données [:, : -1]
 sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
+print(f"Points du vase (classe 1): {np.sum(sorties == 1)}")
+print(f"Points de bruit (classe 0): {np.sum(sorties == 0)}")
 
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[10, 5], n_sorties=1, alpha=0.001) #entrainent
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[16,8,4], n_sorties=1, alpha=0.001) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000) 
-mlp_vase.afficher_vase()
+mlp_vase.afficher_vase(X_train,y_train)
 # affichage du cout pour verifier l'apprentissage
 sortie_entrain = mlp_vase.forward(X_train.T)[0]
 erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
