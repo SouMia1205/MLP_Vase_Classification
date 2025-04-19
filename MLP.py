@@ -91,7 +91,7 @@ class MLP:
             somme = somme + erreur ** 2
         return somme / n
     
-    def afficher_vase(self, X, y):
+    def afficher_vase(self, X, y, points_predictions=None,classes_prediction=None):
         '''Afficher la avse en 3D'''
         figure = plt.figure(figsize=(10,8))
         ax = figure.add_subplot(111, projection = '3d')
@@ -102,6 +102,14 @@ class MLP:
             # afficher 2D 
             ax.scatter(points_vase[:, 0], points_vase[: , 1], c='red' ,s=10, label='Vase')
             ax.scatter(points_bruit[:,0], points_bruit[:,1], c='blue',s=1,alpha=0.3,label='Bruit')
+            # afficher les points de prediction en 2D
+            if points_predictions is not None and classes_prediction is not None:
+                for i,point in enumerate(points_predictions):
+                    if classes_prediction[i] == 1:   #appartient vase
+                        ax.scatter(point[0], point[1], c='darkred',s=100,marker='*', label='Point prédit (Vase)' if i ==0 else "")
+                    else: #Bruit
+                        ax.scatter(point[0], point[1],c='darkblue',s=100,marker='*',label='Point prédit (Bruit)' if i == 0 else "")
+
         #si data en 3D
         elif X.shape[1] == 3:
             points_vase = X[y.flatten() == 1]
@@ -109,6 +117,13 @@ class MLP:
             #afficher end 3D
             ax.scatter(points_vase[:, 0], points_vase[: , 1],points_vase[:,2], c='red' ,s=10, label='Vase')
             ax.scatter(points_bruit[:,0], points_bruit[:,1],points_bruit[:,2], c='blue',s=1,alpha=0.3,label='Bruit')
+            # afficher les points de prediction en 3D
+            if points_predictions is not None and classes_prediction in not None:
+                for i, point in enumerate(points_predictions):
+                    if classes_prediction[i] == 1 #vase
+                        ax.scatter(point[0], point[1],point[2], c='darkred',s=100, marker='*',label='Point prédit (Vase)' if i == 0 else "")
+                    else: #bruit
+                        ax.scatter(point[0],point[1],point[2],c='darkblue',s=100,marker='*',label='Point prédit (Bruit)' if i == 0 else "")
         ax.set_title("Classification du vase en 3D")
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
