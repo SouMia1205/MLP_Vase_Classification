@@ -140,7 +140,7 @@ mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
 output = mlp1.forward(x_iputs)
 print("Sortie du MLP est (QST 1):", output)
-mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=500)
+mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=3000)
 output = mlp1.forward(x_iputs)[0]
 print("Sortie après entraînement (QST 1):", output)
 
