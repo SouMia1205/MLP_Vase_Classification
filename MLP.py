@@ -91,7 +91,7 @@ class MLP:
             somme = somme + erreur ** 2
         return somme / n
     
-    def afficher_vase(self, X, y, points_predictions=None,classes_prediction=None):
+    def afficher_vase(self, X, y, points_predictions=None,classes_predictions=None):
         '''Afficher la avse en 3D'''
         figure = plt.figure(figsize=(10,8))
         ax = figure.add_subplot(111, projection = '3d')
@@ -103,9 +103,9 @@ class MLP:
             ax.scatter(points_vase[:, 0], points_vase[: , 1], c='red' ,s=10, label='Vase')
             ax.scatter(points_bruit[:,0], points_bruit[:,1], c='blue',s=1,alpha=0.3,label='Bruit')
             # afficher les points de prediction en 2D
-            if points_predictions is not None and classes_prediction is not None:
+            if points_predictions is not None and classes_predictions is not None:
                 for i,point in enumerate(points_predictions):
-                    if classes_prediction[i] == 1:   #appartient vase
+                    if classes_predictions[i] == 1:   #appartient vase
                         ax.scatter(point[0], point[1], c='darkred',s=100,marker='*', label='Point prédit (Vase)' if i ==0 else "")
                     else: #Bruit
                         ax.scatter(point[0], point[1],c='darkblue',s=100,marker='*',label='Point prédit (Bruit)' if i == 0 else "")
@@ -118,9 +118,9 @@ class MLP:
             ax.scatter(points_vase[:, 0], points_vase[: , 1],points_vase[:,2], c='red' ,s=10, label='Vase')
             ax.scatter(points_bruit[:,0], points_bruit[:,1],points_bruit[:,2], c='blue',s=1,alpha=0.3,label='Bruit')
             # afficher les points de prediction en 3D
-            if points_predictions is not None and classes_prediction in not None:
+            if points_predictions is not None and classes_predictions is not None:
                 for i, point in enumerate(points_predictions):
-                    if classes_prediction[i] == 1 #vase
+                    if classes_predictions[i] == 1:  #vase
                         ax.scatter(point[0], point[1],point[2], c='darkred',s=100, marker='*',label='Point prédit (Vase)' if i == 0 else "")
                     else: #bruit
                         ax.scatter(point[0],point[1],point[2],c='darkblue',s=100,marker='*',label='Point prédit (Bruit)' if i == 0 else "")
