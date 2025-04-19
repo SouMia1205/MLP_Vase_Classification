@@ -186,7 +186,14 @@ print(f"Exactitude ou bien Performance du modele sur les données de test : {pre
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
 def predire_points():
     print("\nPrédictions pour les points:")
-    for i in range(3):
+    points_predictions = []
+    classes_predictions = []
+    try:
+        n_points = int(input("Combien de points souhaitez vous prédire ? "))
+    except ValueError:
+        print("Entrer un nombre entier ")
+        n_points = 3
+    for i in range(n_points):
         try:
             coordonnees = input(f"[{i+1}]Veuillez entrer les coordonnées du point (séparées par des espaces) : ")
             coordonnees = [float(x) for x in coordonnees.split()]
@@ -201,6 +208,9 @@ def predire_points():
 
                 # Arrondir la sortie pour obtenir la prédiction binaire
                 predicted_class = 1 if sortie_point > 0.5 else 0
+                # pour affichage
+                points_predictions.append(coordonnees)
+                classes_predictions.append(predicted_class)
 
                 # Vérifier si ce point appartient à la vase ou non
                 if predicted_class == 1:
@@ -209,5 +219,9 @@ def predire_points():
                     print(f"Le point {coordonnees} n'appartient pas à la vase.")
         except ValueError:
             print("Veuillez entrer des valeurs numériques valides pour les coordonnées.")
+    # afficher en 3D
+    if points_predictions:
+        print("\nAffichage de la classification avec les points prédits")
+        mlp_vase.afficher_vase(X_train,y_train,points_predictions=np.array(points_predictions),classes_predictions=np.array(classes_predictions))
 
 predire_points()
