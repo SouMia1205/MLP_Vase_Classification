@@ -134,12 +134,28 @@ class MLP:
         plt.show()
 
     def sauvegarder_poids (self, fichier):
-        np.savez(fichier, poids=self.poids, biais=self.biais)
+        save_dictionnaire = {}
+
+        for i,(p, b) in enumerate(zip(self.poids, self.biais)):
+            save_dictionnaire[f'poids_{i}'] = p
+            save_dictionnaire[f'biais_{i}'] = b
+
+        np.savez(fichier, **save_dictionnaire)
+
     
     def charger_poids_ds_fichier(self, fichier):
         data = np.load(fichier, allow_pickle=True)
-        self.poids = data['poids']
-        self.biais = data['biais']
+        self.poids = []
+        self.biais = []
+
+        i = 0
+        while True:
+            try:
+                self.poids.append(data[f'poids_{i}'])
+                self.biais.append(data[f'biais_{i}'])
+                i += 1
+            except KeyError:
+                break
         
 
 
@@ -210,12 +226,14 @@ print(f"Exactitude ou bien Performance du modele sur les données de test : {pre
 mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=0.001)
 
 # Load the saved weights
-mlp_vase_charge.charger_poids('poids_vase.npz')
+mlp_vase_charge.charger_poids_ds_fichier('poids_vase.npz')
+
 
 # Make predictions on test.txt
 
 def predire_fichier(mlp, fichier_test, fichier_resultats=None):
     try:
+        fichier_test = r"data/test.txt"
         donnees_test = np.loadtxt(fichier_test)
         print(f"\nDonnées lues depuis {fichier_test} : ")
         print(donnees_test)
