@@ -132,6 +132,14 @@ class MLP:
 
         ax.legend()
         plt.show()
+
+    def sauvegarder_poids (self, fichier):
+        np.savez(fichier, poids=self.poids, biais=self.biais)
+    
+    def charger_poids_ds_fichier(self, fichier):
+        data = np.load(fichier, allow_pickle=True)
+        self.poids = data['poids']
+        self.biais = data['biais']
         
 
 
