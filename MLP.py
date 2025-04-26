@@ -182,6 +182,8 @@ X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=
 mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[16,8,4], n_sorties=1, alpha=0.001) #entrainent
 mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000) 
 mlp_vase.afficher_vase(X_train,y_train)
+mlp_vase.sauvegarder_poids('poids_vase.npz')
+
 # affichage du cout pour verifier l'apprentissage
 sortie_entrain = mlp_vase.forward(X_train.T)[0]
 erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
@@ -204,8 +206,26 @@ def tester_modele(mlp,  X_test,y_test):
 precision = tester_modele(mlp_vase, X_test,y_test)
 print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
 
+# Create a new MLP with the same architecture
+mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=0.001)
 
+# Load the saved weights
+mlp_vase_charge.charger_poids('poids_vase.npz')
 
+# Make predictions on test.txt
+
+def predire_fichier(mlp, fichier_test, fichier_resultats=None):
+    try:
+        donnees_test = np.loadtxt(fichier_test)
+        print(f"\nDonnées lues depuis {fichier_test} : ")
+        print(donnees_test)
+    except Exception as e:
+        print(f"Erreur lors de la prédiction: {e}")
+        return None
+    
+resultats = predire_fichier(mlp_vase_charge, 'test.txt', 'resultats.txt')
+
+"""
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
 def predire_points():
     print("\nPrédictions pour les points:")
@@ -248,3 +268,4 @@ def predire_points():
         mlp_vase.afficher_vase(X_train,y_train,points_predictions=np.array(points_predictions),classes_predictions=np.array(classes_predictions))
 
 predire_points()
+"""
