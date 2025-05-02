@@ -222,26 +222,61 @@ def tester_modele(mlp,  X_test,y_test):
 precision = tester_modele(mlp_vase, X_test,y_test)
 print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
 
+# Make predictions on test.txt
+
+def predire_fichier(mlp, fichier_test, fichier_resultats=None):
+    try:
+        #fichier_test = r"data/test.txt"
+        donnees_test = np.loadtxt(fichier_test)
+        print(f"\nDonnées lues depuis {fichier_test} : ")
+        for i in range(min(5, donnees_test.shape[0])):
+            print(donnees_test[i])
+            
+        # le tableau de resultat ( features + labels (predicitons de model))
+        resultats = np.zeros((donnees_test.shape[0], donnees_test.shape[1] + 1))
+        for i in range(donnees_test.shape[0]):
+            for j in range(donnees_test.shape[1]):
+                resultats[i, j] = donnees_test[i, j]
+        
+        for i in range(donnees_test.shape[0]):
+            point = donnees_test[i].reshape(-1,1)  # Reshape pour le format attendu par forward
+            sortie = mlp.forward(point)[0] 
+            # conversion en binaire
+            if sortie[0, 0] > 0.5:
+                classe_predite = 1
+            else:
+                classe_predite = 0
+
+            resultats[i, -1] = classe_predite
+        
+        if fichier_resultats:
+            with open(fichier_resultats, 'w') as f:
+                for i in range(resultats.shape[0]):
+                    valeurs = []
+                    for j in range(resultats.shape[1]):
+                        valeurs.append(f"{resultats[i, j]:.8f}")
+                    
+                    ligne = " ".join(valeurs)
+                    f.write(ligne + '\n')
+            print(f"Resultats enregistrés dans le fichier {fichier_resultats}")
+
+        print(f"\nLes 5 premieres lignes de resultats : ")
+        for i in range(min(5, resultats.shape[0])):
+            print(resultats[i])
+
+        return resultats
+
+    except Exception as e:
+        print(f"Erreur lors de la prédiction: {e}")
+        return None
+
 # Create a new MLP with the same architecture
 mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=0.001)
 
 # Load the saved weights
 mlp_vase_charge.charger_poids_ds_fichier('poids_vase.npz')
 
-
-# Make predictions on test.txt
-
-def predire_fichier(mlp, fichier_test, fichier_resultats=None):
-    try:
-        fichier_test = r"data/test.txt"
-        donnees_test = np.loadtxt(fichier_test)
-        print(f"\nDonnées lues depuis {fichier_test} : ")
-        print(donnees_test)
-    except Exception as e:
-        print(f"Erreur lors de la prédiction: {e}")
-        return None
-    
-resultats = predire_fichier(mlp_vase_charge, 'test.txt', 'resultats.txt')
+resultats = predire_fichier(mlp_vase_charge, r"data/test.txt", 'resultats.txt')
 
 """
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
