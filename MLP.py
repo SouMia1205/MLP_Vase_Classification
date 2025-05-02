@@ -264,11 +264,53 @@ def predire_fichier(mlp, fichier_test, fichier_resultats=None):
         for i in range(min(5, resultats.shape[0])):
             print(resultats[i])
 
+                # Affichage en 3D des points de test et leurs prédictions
+        print("\nAffichage en 3D des points de test avec leurs prédictions...")
+        # Afficher les points de test sur la visualisation du vase
+        if X_train is not None and y_train is not None:
+            afficher_vase_avec_points_test(mlp, X_train, y_train, donnees_test, resultats[:, -1])
+        
         return resultats
 
     except Exception as e:
         print(f"Erreur lors de la prédiction: {e}")
         return None
+
+def afficher_vase_avec_points_test(mlp, X_train, y_train, X_test, y_pred):
+    figure = plt.figure(figsize=(12, 10))
+    ax = figure.add_subplot(111, projection='3d')
+    
+    # Afficher les données d'entraînement
+    points_vase = X_train[y_train.flatten() == 1]
+    points_bruit = X_train[y_train.flatten() == 0]
+    
+    # Afficher en 3D (pour données 3D)
+    if X_train.shape[1] == 3:
+        # Données d'entraînement avec alpha réduit pour voir les points de test
+        ax.scatter(points_vase[:, 0], points_vase[:, 1], points_vase[:, 2], 
+                   c='red', s=10, alpha=0.3, label='Vase (entraînement)')
+        ax.scatter(points_bruit[:, 0], points_bruit[:, 1], points_bruit[:, 2], 
+                   c='blue', s=1, alpha=0.1, label='Bruit (entraînement)')
+        
+        # Points de test prédits comme vase
+        points_test_vase = X_test[y_pred == 1]
+        if len(points_test_vase) > 0:
+            ax.scatter(points_test_vase[:, 0], points_test_vase[:, 1], points_test_vase[:, 2], 
+                      c='black', s=150, marker='*', linewidth=3, label='Test (prédit vase)')
+        
+        # Points de test prédits comme bruit
+        points_test_bruit = X_test[y_pred == 0]
+        if len(points_test_bruit) > 0:
+            ax.scatter(points_test_bruit[:, 0], points_test_bruit[:, 1], points_test_bruit[:, 2], 
+                      c='darkblue', s=80, marker='o', linewidth=2, label='Test (prédit bruit)')
+        
+        ax.set_zlabel("Z")
+    
+    ax.set_title("Classification du vase avec points de test")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.legend()
+    plt.show()
 
 # Create a new MLP with the same architecture
 mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=0.001)
@@ -277,6 +319,7 @@ mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=
 mlp_vase_charge.charger_poids_ds_fichier('poids_vase.npz')
 
 resultats = predire_fichier(mlp_vase_charge, r"data/test.txt", 'resultats.txt')
+print("\nAffichage des données d'entraînement pour comparaison...")
 
 """
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
