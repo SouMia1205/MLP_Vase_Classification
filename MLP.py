@@ -15,7 +15,9 @@ class MLP:
         # Initialisation des poids et biais
         self.poids = []  
         self.biais = []  
-        
+        self.best_error = float('inf')
+        self.best_poids = None
+        self.best_biais = None
         # Couche d'entrée  à première couche cachée
         self.poids.append(np.random.randn(couche_cachés[0], n_entrées))
         self.biais.append(np.random.randn(couche_cachés[0], 1))   # chaque neuron dans la première couche cachée a un biais associé.
@@ -73,6 +75,17 @@ class MLP:
                 erreur_moy = self.cout(sortie, Valeurs_vrais)
                 historique_erreur.append(erreur_moy)
                 print(f"Itération {j} : Erreur = {erreur_moy}")
+
+                if erreur_moy < self.best_error:
+                    self.best_error = erreur_moy
+                    self.best_poids = [w.copy() for w in self.poids]
+                    self.best_biais = [b.copy() for b in self.biais]
+                    print(f"Nouveau meilleur erreur: {self.best_error}")
+                    
+        if self.best_poids is not None:
+            self.poids = [w.copy() for w in self.best_poids]
+            self.biais = [b.copy() for b in self.best_biais]
+            print(f"Meilleur erreur chargée: {self.best_error}")
 
         # afficher la courpe d'apprentissage
         plt.figure(figsize=(10, 5))
@@ -156,55 +169,7 @@ class MLP:
                 i += 1
             except KeyError:
                 break
-        
-
-
-# Exemple d'utilisation
-mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
-x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
-output = mlp1.forward(x_iputs)
-print("Sortie du MLP est (QST 1):", output)
-mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=3000)
-output = mlp1.forward(x_iputs)[0]
-print("Sortie après entraînement (QST 1):", output)
-
-# Données XOR
-Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
-sortie = np.array([[0, 1, 1, 0]])
-
-# Initialisation du réseau
-mlp_xor = MLP(n_entrées=2, couche_cachés=[4], n_sorties=1, alpha=0.1)
-
-# Entraînement
-mlp_xor.entrainement(Xor, sortie, n_iteration=3000)
-
-# Test du modèle
-sortie_predite = mlp_xor.forward(Xor)[0]
-print("\nSortie après entraînement (XOR) :")
-print(sortie_predite)
-
-# lir le fichier text
-données = np.loadtxt(r"data/data.txt") 
-print(" les  données") 
-print(données[:10])  
-
-entrées = données [:, : -1]
-sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
-print(f"Points du vase (classe 1): {np.sum(sorties == 1)}")
-print(f"Points de bruit (classe 0): {np.sum(sorties == 0)}")
-
-# Diviser les données en 80% entraînement et 20% test
-X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
-mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[16,8,4], n_sorties=1, alpha=0.001) #entrainent
-mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000) 
-mlp_vase.afficher_vase(X_train,y_train)
-mlp_vase.sauvegarder_poids('poids_vase.npz')
-
-# affichage du cout pour verifier l'apprentissage
-sortie_entrain = mlp_vase.forward(X_train.T)[0]
-erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
-print(f"Cout final du modele apres l'entrainement est : {erreur_entrain}")
-
+    
 def tester_modele(mlp,  X_test,y_test):
     sortie_predite = mlp.forward(X_test.T)[0]
     # arrondir les sorties pour des predictions binairs
@@ -219,8 +184,7 @@ def tester_modele(mlp,  X_test,y_test):
     precision = (predictions_vrais/total_predictions) *100
     return precision
 
-precision = tester_modele(mlp_vase, X_test,y_test)
-print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
+
 
 # Make predictions on test.txt
 
@@ -312,14 +276,62 @@ def afficher_vase_avec_points_test(mlp, X_train, y_train, X_test, y_pred):
     ax.legend()
     plt.show()
 
-# Create a new MLP with the same architecture
-mlp_vase_charge = MLP(n_entrées=3, couche_cachés=[16,8,4], n_sorties=1, alpha=0.001)
 
-# Load the saved weights
-mlp_vase_charge.charger_poids_ds_fichier('poids_vase.npz')
+# Exemple d'utilisation
+mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
+x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
+output = mlp1.forward(x_iputs)
+print("Sortie du MLP est (QST 1):", output)
+mlp1.entrainement(x_iputs, np.array([[1]]), n_iteration=3000)
+output = mlp1.forward(x_iputs)[0]
+print("Sortie après entraînement (QST 1):", output)
 
-resultats = predire_fichier(mlp_vase_charge, r"data/test.txt", 'resultats.txt')
+# Données XOR
+Xor = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+sortie = np.array([[0, 1, 1, 0]])
+
+# Initialisation du réseau
+mlp_xor = MLP(n_entrées=2, couche_cachés=[4], n_sorties=1, alpha=0.1)
+
+# Entraînement
+mlp_xor.entrainement(Xor, sortie, n_iteration=3000)
+
+# Test du modèle
+sortie_predite = mlp_xor.forward(Xor)[0]
+print("\nSortie après entraînement (XOR) :")
+print(sortie_predite)
+
+# lir le fichier text
+données = np.loadtxt(r"data/data.txt") 
+print(" les  données") 
+print(données[:10])  
+
+entrées = données [:, : -1]
+sorties = données[:, -1].reshape(-1, 1)  # La dernière colonne est la sortie 
+print(f"Points du vase (classe 1): {np.sum(sorties == 1)}")
+print(f"Points de bruit (classe 0): {np.sum(sorties == 0)}")
+
+# Diviser les données en 80% entraînement et 20% test
+X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
+mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[16,8,4], n_sorties=1, alpha=0.001) #entrainent
+mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000) 
+mlp_vase.afficher_vase(X_train,y_train)
+mlp_vase.sauvegarder_poids('poids_vase.npz')
+
+mlp_vase.charger_poids_ds_fichier('poids_vase.npz')
+
+precision = tester_modele(mlp_vase, X_test,y_test)
+print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
+
+# affichage du cout pour verifier l'apprentissage
+sortie_entrain = mlp_vase.forward(X_train.T)[0]
+erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
+print(f"Cout final du modele apres l'entrainement est : {erreur_entrain}")
+
+resultats = predire_fichier(mlp_vase, r"data/test.txt", 'resultats.txt')
 print("\nAffichage des données d'entraînement pour comparaison...")
+
+
 
 """
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
