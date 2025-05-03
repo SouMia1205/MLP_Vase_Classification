@@ -328,12 +328,43 @@ sortie_entrain = mlp_vase.forward(X_train.T)[0]
 erreur_entrain = mlp_vase.cout(sortie_entrain, y_train.T)
 print(f"Cout final du modele apres l'entrainement est : {erreur_entrain}")
 
-resultats = predire_fichier(mlp_vase, r"data/test.txt", 'resultats.txt')
-print("\nAffichage des données d'entraînement pour comparaison...")
+#resultats = predire_fichier(mlp_vase, r"data/test.txt", 'resultats.txt')
+#print("\nAffichage des données d'entraînement pour comparaison...")
 
 
+def menu_test_mlp():
+    print("\n" + "="*50)
+    print("MENU DE TEST DU MODÈLE MLP VASE")
+    print("="*50)
+    
+    while True:
+        print("\nChoisissez une option:")
+        print("1. Tester avec des points manuels")
+        print("2. Tester avec un fichier")
+        print("3. Quitter")
+        
+        choix = input("\nVotre choix (1-3): ")
+        
+        if choix == "1":
+            predire_points()
+        elif choix == "2":
+            fichier_test = input("Entrez le chemin du fichier test (défaut: data/test.txt): ").strip()
+            if not fichier_test:
+                fichier_test = "data/test.txt"
+                
+            fichier_resultats = input("Entrez le nom du fichier de résultats (défaut: resultats.txt): ").strip()
+            if not fichier_resultats:
+                fichier_resultats = "resultats.txt"
+                
+            resultats = predire_fichier(mlp_vase, fichier_test, fichier_resultats)
+            print(f"Prédictions terminées et enregistrées dans {fichier_resultats}")
+        elif choix == "3":
+            print("Au revoir!")
+            break
+        else:
+            print("Choix invalide. Veuillez entrer 1, 2 ou 3.")
 
-"""
+
 # Demander à l'utilisateur de saisir les coordonnées du point (3 points par example)
 def predire_points():
     print("\nPrédictions pour les points:")
@@ -375,5 +406,5 @@ def predire_points():
         print("\nAffichage de la classification avec les points prédits")
         mlp_vase.afficher_vase(X_train,y_train,points_predictions=np.array(points_predictions),classes_predictions=np.array(classes_predictions))
 
-predire_points()
-"""
+
+menu_test_mlp()
