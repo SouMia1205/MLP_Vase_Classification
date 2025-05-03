@@ -314,11 +314,20 @@ print(f"Points de bruit (classe 0): {np.sum(sorties == 0)}")
 # Diviser les données en 80% entraînement et 20% test
 X_train, X_test, y_train, y_test = train_test_split(entrées,sorties, test_size=0.2, random_state=42)  # random_state = 42 pour fixer la division des données
 mlp_vase = MLP(n_entrées=X_train.shape[1], couche_cachés=[16,8,4], n_sorties=1, alpha=0.001) #entrainent
-mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000) 
-mlp_vase.afficher_vase(X_train,y_train)
-mlp_vase.sauvegarder_poids('poids_vase.npz')
 
-mlp_vase.charger_poids_ds_fichier('poids_vase.npz')
+fichier_existe = False
+try:
+    mlp_vase.charger_poids_ds_fichier('poids_vase.npz')
+    print("Chargement des poids depuis le fichier existant 'poids_vase.npz'...")
+    fichier_existe = True
+except:
+    print("Fichier de poids non trouvé. Démarrage de l'entraînement...")
+    
+if not fichier_existe:
+    for i in range(1):  # Utilisation de for pour une seule itération de l'entraînement
+        mlp_vase.entrainement(X_train.T, y_train.T, n_iteration=3000)
+        mlp_vase.sauvegarder_poids('poids_vase.npz')
+        print("Poids enregistrés dans 'poids_vase.npz'")
 
 precision = tester_modele(mlp_vase, X_test,y_test)
 print(f"Exactitude ou bien Performance du modele sur les données de test : {precision:.2f}%")
