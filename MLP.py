@@ -218,7 +218,10 @@ def predire_fichier(mlp, fichier_test, fichier_resultats=None):
                 for i in range(resultats.shape[0]):
                     valeurs = []
                     for j in range(resultats.shape[1]):
-                        valeurs.append(f"{resultats[i, j]:.8f}")
+                        if j == resultats.shape[1] - 1:
+                            valeurs.append(f"{int(resultats[i, j])}")
+                        else:
+                            valeurs.append(f"{resultats[i, j]:.8f}")
                     
                     ligne = " ".join(valeurs)
                     f.write(ligne + '\n')
@@ -259,14 +262,14 @@ def afficher_vase_avec_points_test(mlp, X_train, y_train, X_test, y_pred):
         # Points de test prédits comme vase
         points_test_vase = X_test[y_pred == 1]
         if len(points_test_vase) > 0:
-            ax.scatter(points_test_vase[:, 0], points_test_vase[:, 1], points_test_vase[:, 2], 
-                      c='black', s=150, marker='*', linewidth=3, label='Test (prédit vase)')
+            ax.scatter(points_test_vase[:, 0], points_test_vase[:, 1], points_test_vase[:, 2], alpha=0.8,
+                      c='red', s=40, marker='*', linewidth=3, label='Test (prédit vase)')
         
         # Points de test prédits comme bruit
         points_test_bruit = X_test[y_pred == 0]
         if len(points_test_bruit) > 0:
-            ax.scatter(points_test_bruit[:, 0], points_test_bruit[:, 1], points_test_bruit[:, 2], 
-                      c='darkblue', s=80, marker='o', linewidth=2, label='Test (prédit bruit)')
+            ax.scatter(points_test_bruit[:, 0], points_test_bruit[:, 1], points_test_bruit[:, 2], alpha= 0.2,
+                      c='lightgray', s=40, marker='o', linewidth=2, label='Test (prédit bruit)')
         
         ax.set_zlabel("Z")
     
