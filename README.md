@@ -2,6 +2,7 @@
 
 Lakhal Soumia
 
+04/05 : 98.5%
 20/04 : 3d classification (done excellent 98%), 3d viz done
 06/04 : Xor OK
 16/03 : Absente (Code trop propre chatgpt?)

@@ -279,7 +279,7 @@ def afficher_vase_avec_points_test(mlp, X_train, y_train, X_test, y_pred):
     ax.legend()
     plt.show()
 
-
+"""
 # Exemple d'utilisation
 mlp1 = MLP(n_entrées=2, couche_cachés=[3, 2], n_sorties=1, alpha=0.1)
 x_iputs = np.random.randn(2, 1)  # Une entrée avec 2 features
@@ -303,6 +303,7 @@ mlp_xor.entrainement(Xor, sortie, n_iteration=3000)
 sortie_predite = mlp_xor.forward(Xor)[0]
 print("\nSortie après entraînement (XOR) :")
 print(sortie_predite)
+"""
 
 # lir le fichier text
 données = np.loadtxt(r"data/data.txt") 
@@ -362,7 +363,7 @@ def menu_test_mlp():
         elif choix == "2":
             fichier_test = input("Entrez le chemin du fichier test (défaut: data/test.txt): ").strip()
             if not fichier_test:
-                fichier_test = "data/test.txt"
+                fichier_test = "test.txt"
                 
             fichier_resultats = input("Entrez le nom du fichier de résultats (défaut: resultats.txt): ").strip()
             if not fichier_resultats:
